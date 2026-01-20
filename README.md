@@ -898,6 +898,11 @@ pm2 monit
 pm2 startup
 pm2 save
 ```
+## API Documentation (Swagger)
+
+After starting the server locally, Swagger UI is available at:
+
+http://localhost:3000/api-docs
 
 ## 🤝 Contributing
 

@@ -6,8 +6,48 @@ const { validate } = require('../middleware/validation');
 
 const router = express.Router();
 
+/**
+ * @swagger
+ * /users/details:
+ *   get:
+ *     summary: Get logged-in user details
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User details fetched successfully
+ *       401:
+ *         description: Unauthorized
+ */
 router.get('/details', authenticate, getUserDetails);
 
+/**
+ * @swagger
+ * /users/onboarding-stage:
+ *   patch:
+ *     summary: Update onboarding stage
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [stage]
+ *             properties:
+ *               stage:
+ *                 type: integer
+ *                 enum: [0, 1, 2]
+ *                 example: 1
+ *     responses:
+ *       200:
+ *         description: Onboarding stage updated successfully
+ *       400:
+ *         description: Invalid stage
+ */
 router.patch(
   '/onboarding-stage',
   authenticate,
