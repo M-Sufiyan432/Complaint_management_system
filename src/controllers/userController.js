@@ -1,4 +1,6 @@
+const  uploadCloudenary  = require('../config/cloudinary');
 const { AppDataSource } = require('../config/database');
+// const {upload}
 
 const userRepository = AppDataSource.getRepository('User');
 const complaintRepository = AppDataSource.getRepository('Complaint');
@@ -16,12 +18,15 @@ const getUserDetails = async (req, res) => {
     const complaintsCount = await complaintRepository.count({
       where: { user_id: req.userId }
     });
-
+    console.log("get User Details User",user);
+    
     res.json({
       id: user.id,
       name: user.name,
       email: user.email,
+      role : user.role,
       created_at: user.created_at,
+      profileImage : user.profileImage,
       onboarding_stage: user.onboarding_stage,
       complaints_count: complaintsCount,
       onboarding_complete: user.onboarding_complete
@@ -66,5 +71,35 @@ const updateOnboardingStage = async (req, res) => {
     res.status(500).json({ error: 'Failed to update onboarding stage' });
   }
 };
+const editProfile = async (req, res) => {
+  try {
+    const user = await userRepository.findOne({
+      where: { id: req.userId }
+    });
 
-module.exports = { getUserDetails, updateOnboardingStage };
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    const imageUrl = await uploadCloudenary(req.file.buffer);
+
+    user.profileImage = imageUrl;
+    
+    await userRepository.save(user);
+    console.log("test User in UserProfile",user);
+    
+
+    res.status(200).json({
+      message: "Profile image updated",
+      profileImage: imageUrl
+    });
+
+  } catch (error) {
+    console.error("Upload error:", error);
+    res.status(500).json({ error: "Upload failed" });
+  }
+};
+
+
+
+module.exports = { getUserDetails, updateOnboardingStage,editProfile };

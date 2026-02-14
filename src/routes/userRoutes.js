@@ -1,8 +1,9 @@
 const express = require('express');
 const { body } = require('express-validator');
-const { getUserDetails, updateOnboardingStage } = require('../controllers/userController');
+const { getUserDetails, updateOnboardingStage, editProfile } = require('../controllers/userController');
 const { authenticate } = require('../middleware/auth');
 const { validate } = require('../middleware/validation');
+const { upload } = require('../middleware/multer');
 
 const router = express.Router();
 
@@ -59,5 +60,7 @@ router.patch(
   ],
   updateOnboardingStage
 );
+
+router.post("/profile",upload.single("profileImage"),editProfile)
 
 module.exports = router;

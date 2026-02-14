@@ -3,24 +3,49 @@ require('dotenv').config();
 const express = require('express');
 const { AppDataSource } = require('./config/database');
 const { initializeCronJobs } = require('./jobs/cronScheduler');
+const cors = require("cors");
 
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const complaintRoutes = require('./routes/complaintRoutes');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger');
-
+const cookieParser = require('cookie-parser');
+const adminRouter = require('./routes/adminRoutes');
+const passwordRoutes = require("./routes/passwordRoutes");
 
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(cookieParser());
+
+
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
+
+app.options('*', cors());
+
+
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/', authRoutes);
+app.use("/", passwordRoutes);
 app.use('/user', userRoutes);
 app.use('/complaints', complaintRoutes);
+app.use('/admin', adminRouter);
+
+app.use((req, res, next) => {
+  console.log(`➡️ ${req.method} ${req.originalUrl}`);
+  next();
+});
+
 
 app.get('/health', (req, res) => {
   res.json({

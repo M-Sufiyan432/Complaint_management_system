@@ -37,6 +37,8 @@ const createComplaint = async (req, res) => {
         complaint_type: complaint.complaint_type,
         status: complaint.status,
         created_at: complaint.created_at,
+        updated_at: complaint.updated_at,   // ✅ ADD THIS
+        details: complaint.details  
       },
     });
   } catch (error) {
@@ -46,10 +48,10 @@ const createComplaint = async (req, res) => {
 };
 
 const updateComplaintStatus = async (req, res) => {
+  console.log('🔥 updateComplaintStatus HIT');
+
   try {
     const { id } = req.params;
-    console.log("updated Complain id",id);
-    
     const { status } = req.body;
 
     if (!Object.values(ComplaintStatus).includes(status)) {
@@ -57,7 +59,7 @@ const updateComplaintStatus = async (req, res) => {
     }
 
     const complaint = await complaintRepository.findOne({
-      where: { id: parseInt(id), user_id: req.userId },
+      where: { id: parseInt(id) }, // ✅ admin can update any complaint
     });
 
     if (!complaint) {
@@ -74,11 +76,10 @@ const updateComplaintStatus = async (req, res) => {
     complaint.status = status;
     complaint.status_updated_at = new Date();
 
-   const complainRepo=  await complaintRepository.save(complaint);
+    await complaintRepository.save(complaint);
+    handleComplaintStatusChange(complaint, oldStatus, status);
 
-    const CompleteStatus = await handleComplaintStatusChange(complaint, oldStatus, status);
-
-    res.json({
+    return res.status(200).json({
       message: "Complaint status updated successfully",
       complaint: {
         id: complaint.id,
@@ -86,11 +87,13 @@ const updateComplaintStatus = async (req, res) => {
         status_updated_at: complaint.status_updated_at,
       },
     });
+
   } catch (error) {
     console.error("Update complaint status error:", error);
-    res.status(500).json({ error: "Failed to update complaint status" });
+    return res.status(500).json({ error: "Failed to update complaint status" });
   }
 };
+
 
 const getComplaintMetrics = async (req, res) => {
   try {
@@ -123,6 +126,7 @@ const getComplaintMetrics = async (req, res) => {
       current_status: complaint.status,
       time_in_current_status_minutes: timeInCurrentStatusMinutes,
       total_time_minutes: totalTimeMinutes,
+      
     });
   } catch (error) {
     console.error("Get complaint metrics error:", error);
@@ -130,8 +134,26 @@ const getComplaintMetrics = async (req, res) => {
   }
 };
 
+const getComlaints = async(req,res)=>{
+  try {
+    const complaint = await complaintRepository.find({
+      where:{ user_id: req.userId }
+    })
+    if(!complaint){
+      res.status(404).json({
+        error:"Complaint not found"
+      })
+    }
+    res.status(202).json(complaint)
+  } catch (error) {
+     console.error("Get complaint  error:", error);
+    res.status(500).json({ error: "Failed to fetch complaint " });
+  }
+}
+
 module.exports = {
   createComplaint,
   updateComplaintStatus,
   getComplaintMetrics,
+  getComlaints,
 };
