@@ -1,20 +1,39 @@
-require('dotenv').config();
-const { DataSource } = require('typeorm');
-const UserEntity = require('../entities/User');
-const { ComplaintEntity } = require('../entities/Complaint');
-const { NotificationEntity } = require('../entities/Notification');
-const OnboardingReminderEntity = require('../entities/OnboardingReminder');
+require("dotenv").config();
+const { DataSource } = require("typeorm");
+
+const UserEntity = require("../entities/User");
+const { ComplaintEntity } = require("../entities/Complaint");
+const { NotificationEntity } = require("../entities/Notification");
+const OnboardingReminderEntity = require("../entities/OnboardingReminder");
+
+const isProduction = process.env.NODE_ENV === "production";
 
 const AppDataSource = new DataSource({
-  type: 'postgres',
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '5432'),
-  username: process.env.DB_USERNAME || 'postgres',
-  password: process.env.DB_PASSWORD || 'Pass@123',
-  database: process.env.DB_DATABASE || 'complaint_system',
-  entities: [UserEntity, ComplaintEntity, NotificationEntity, OnboardingReminderEntity],
-  synchronize: process.env.NODE_ENV === 'development',
-  logging: process.env.NODE_ENV === 'development'
+  type: "postgres",
+
+  // 🔥 Use DATABASE_URL in production
+  ...(isProduction
+    ? {
+        url: process.env.Ren_Internal_Database_URL,
+        ssl: { rejectUnauthorized: false },
+      }
+    : {
+        host: process.env.DB_HOST ,
+        port: parseInt(process.env.DB_PORT ),
+        username: process.env.DB_USERNAME ,
+        password: process.env.DB_PASSWORD ,
+        database: process.env.DB_DATABASE ,
+      }),
+
+  entities: [
+    UserEntity,
+    ComplaintEntity,
+    NotificationEntity,
+    OnboardingReminderEntity,
+  ],
+
+  synchronize: process.env.NODE_ENV === "development",
+  logging: process.env.NODE_ENV === "development",
 });
 
 module.exports = { AppDataSource };
