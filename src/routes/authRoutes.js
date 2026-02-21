@@ -9,7 +9,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /auth/register:
+ * /api/v1/auth/register:
  *   post:
  *     summary: Register a new user
  *     tags: [Auth]
@@ -18,7 +18,6 @@ const router = express.Router();
  *       content:
  *         application/json:
  *           schema:
- *             type: object
  *             required: [name, email, password]
  *             properties:
  *               name:
@@ -34,7 +33,7 @@ const router = express.Router();
  *       201:
  *         description: User registered successfully
  *       400:
- *         description: Validation error or email already exists
+ *         description: Validation error
  */
 router.post(
   '/register',
@@ -51,7 +50,7 @@ router.post(
 
 /**
  * @swagger
- * /auth/login:
+ * /api/v1/auth/login:
  *   post:
  *     summary: Login user
  *     tags: [Auth]
@@ -60,7 +59,6 @@ router.post(
  *       content:
  *         application/json:
  *           schema:
- *             type: object
  *             required: [email, password]
  *             properties:
  *               email:
@@ -84,8 +82,35 @@ router.post(
   ],
   login
 );
+
+/**
+ * @swagger
+ * /api/v1/auth/logout:
+ *   post:
+ *     summary: Logout user
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: Logout successful
+ */
 router.post("/logout",logOut)
+
 router.get('/refresh',refresh);
+
+/**
+ * @swagger
+ * /api/v1/auth/me:
+ *   get:
+ *     summary: Get current logged-in user
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User details
+ *       401:
+ *         description: Unauthorized
+ */
 router.get('/me',authenticate,me)
 
 module.exports = router;

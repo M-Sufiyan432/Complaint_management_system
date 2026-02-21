@@ -7,10 +7,12 @@ const { NotificationEntity } = require("../entities/Notification");
 const OnboardingReminderEntity = require("../entities/OnboardingReminder");
 
 const isProduction = process.env.NODE_ENV === "production";
+console.log("NODE_ENV:", process.env.NODE_ENV);
+console.log("DATABASE_URL:", process.env.Ren_Internal_Database_URL);
 
 const AppDataSource = new DataSource({
   type: "postgres",
-
+  
   // 🔥 Use DATABASE_URL in production
   ...(isProduction
     ? {
@@ -31,7 +33,7 @@ const AppDataSource = new DataSource({
     NotificationEntity,
     OnboardingReminderEntity,
   ],
-
+   
   synchronize: process.env.NODE_ENV === "development",
   logging: process.env.NODE_ENV === "development",
 });

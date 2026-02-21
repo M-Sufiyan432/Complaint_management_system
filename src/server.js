@@ -22,17 +22,21 @@ app.use(express.json());
 app.use(cookieParser());
 
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://complaint-managment-frontend.onrender.com"
+];
+
 app.use(cors({
-  origin: process.env.CLIENT_URL,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
 }));
-
-
-app.options('*', cors());
-
-
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/', authRoutes);
