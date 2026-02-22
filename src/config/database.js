@@ -34,8 +34,8 @@ const AppDataSource = new DataSource({
     OnboardingReminderEntity,
   ],
    
-  synchronize: process.env.NODE_ENV === "development",
-  logging: process.env.NODE_ENV === "development",
+  synchronize: true,
+  logging: true,
 });
 
 module.exports = { AppDataSource };

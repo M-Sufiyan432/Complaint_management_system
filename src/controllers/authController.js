@@ -36,7 +36,7 @@ const register = async (req, res) => {
     const accessToken = await getAccessToken(user.id);
     // console.log("AcessTokenn in register",accessToken);
     
-    const refreshToken = await getRefreshToken(user.id);
+    const refreshToken =  getRefreshToken();
     // console.log("Refresh Token in register",refreshToken);
     
 
@@ -102,7 +102,7 @@ const login = async (req, res) => {
     
     const isProd = process.env.NODE_ENV === "production";
     
-    const refreshToken = getRefreshToken();
+    const refreshToken = await getRefreshToken();
 
 user.refresh_token = crypto
   .createHash("sha256")
