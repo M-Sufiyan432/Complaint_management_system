@@ -26,6 +26,7 @@ module.exports = new EntitySchema({
     password: {
       type: "varchar",
       length: 255,
+      nullable:true,
     },
     refresh_token: {
       type: "text",
@@ -57,6 +58,21 @@ module.exports = new EntitySchema({
       type: "timestamp",
       createDate: true,
     },
+provider: {
+  type: "enum",
+  enum: ["local", "oauth"],
+  default: "local",
+},
+
+googleId: {
+  type: "varchar",
+  nullable: true,
+},
+
+githubId: {
+  type: "varchar",
+  nullable: true,
+},
   },
   relations: {
     complaints: {

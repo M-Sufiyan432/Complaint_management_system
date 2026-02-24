@@ -1,9 +1,10 @@
 const express = require('express');
 const { body } = require('express-validator');
-const { register, login, me, logOut } = require('../controllers/authController');
+const { register, login, me, logOut, oauthSuccess } = require('../controllers/authController');
 const { validate } = require('../middleware/validation');
 const { refresh } = require('../config/refresh');
 const { authenticate } = require('../middleware/auth');
+const passport = require('passport');
 
 const router = express.Router();
 
@@ -112,5 +113,28 @@ router.get('/refresh',refresh);
  *         description: Unauthorized
  */
 router.get('/me',authenticate,me)
+
+router.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+router.get(
+  "/auth/google/callback",
+  passport.authenticate("google", { session: false }),
+  oauthSuccess
+);
+
+/* GITHUB */
+router.get(
+  "/github",
+  passport.authenticate("github", { scope: ["user:email"] })
+);
+
+router.get(
+  "/github/callback",
+  passport.authenticate("github", { session: false }),
+  oauthSuccess
+);
 
 module.exports = router;

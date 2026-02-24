@@ -19,8 +19,14 @@ const forgotPassword = async (req, res) => {
       });
     }
 
+    // 🔐 Prevent reset for OAuth-only users
+    if (!user.password) {
+      return res.status(400).json({
+        message: "This account uses Google/GitHub login.",
+      });
+    }
 
-    const {rawToken,hashedToken} = generateResetToken()
+    const { rawToken, hashedToken } = generateResetToken();
 
     user.reset_password_token = hashedToken;
     user.reset_password_expires = new Date(Date.now() + 15 * 60 * 1000);
@@ -34,6 +40,7 @@ const forgotPassword = async (req, res) => {
     res.json({
       message: "If the email exists, a reset link has been sent.",
     });
+
   } catch (error) {
     console.error("Forgot Password Error:", error);
     res.status(500).json({ message: "Server error" });
@@ -53,6 +60,12 @@ const resetPassword = async (req, res) => {
     const user = await userRepository.findOne({
       where: { reset_password_token: hashedToken },
     });
+
+    if (!user.password) {
+      return res.status(400).json({
+    message: "Password reset not allowed for OAuth accounts."
+     });
+    }
 
     if (
       !user ||
@@ -82,7 +95,6 @@ const resetPassword = async (req, res) => {
 // const bcrypt = require("bcrypt");
 
 const changePassword = async (req, res) => {
-  console.log("change Password Hit")
   try {
     const { currentPassword, newPassword } = req.body;
 
@@ -94,17 +106,24 @@ const changePassword = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Compare current password
+    // 🔐 Block OAuth-only users
+    if (!user.password) {
+      return res.status(400).json({
+        error: "This account uses Google/GitHub login."
+      });
+    }
+
     const isMatch = await bcrypt.compare(currentPassword, user.password);
 
     if (!isMatch) {
       return res.status(400).json({ error: "Current password is incorrect" });
     }
 
-    // Hash new password
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = await bcrypt.hash(newPassword, 10);
 
-    user.password = hashedPassword;
+    // Invalidate sessions
+    user.refresh_token = null;
+
     await userRepository.save(user);
 
     res.status(200).json({
@@ -116,10 +135,53 @@ const changePassword = async (req, res) => {
     res.status(500).json({ error: "Failed to change password" });
   }
 };
+const setPassword = async (req, res) => {
+  try {
+    const { newPassword } = req.body;
+
+    const user = await userRepository.findOne({
+      where: { id: req.userId },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // 🔐 Must be OAuth user
+    if (!user.googleId && !user.githubId) {
+      return res.status(400).json({
+        error: "Password can only be set for OAuth accounts.",
+      });
+    }
+
+    // 🔐 Prevent overwriting existing password
+    if (user.password) {
+      return res.status(400).json({
+        error: "Password already exists. Use change password instead.",
+      });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    user.password = hashedPassword;
+
+    await userRepository.save(user);
+
+    res.status(200).json({
+      message: "Password set successfully. You can now login using email/password.",
+    });
+
+  } catch (error) {
+    console.error("Set password error:", error);
+    res.status(500).json({ error: "Failed to set password" });
+  }
+};
 
 
 module.exports = {
   forgotPassword,
   resetPassword,
-  changePassword
+  changePassword,
+  setPassword
 };

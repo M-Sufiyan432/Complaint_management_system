@@ -13,11 +13,13 @@ const swaggerSpec = require('./config/swagger');
 const cookieParser = require('cookie-parser');
 const adminRouter = require('./routes/adminRoutes');
 const passwordRoutes = require("./routes/passwordRoutes");
+const passport = require("./config/passport")
 
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(passport.initialize())
 app.use(express.json());
 app.use(cookieParser());
 

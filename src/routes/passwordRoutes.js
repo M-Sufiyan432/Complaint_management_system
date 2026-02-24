@@ -3,6 +3,7 @@ const {
   forgotPassword,
   resetPassword,
   changePassword,
+  setPassword,
 } = require("../controllers/passwordController");
 const { forgotPasswordLimiter } = require("../middleware/rateLimiter");
 const { authenticate } = require("../middleware/auth");
@@ -75,6 +76,17 @@ router.post(
   changePassword
 );
 
+router.post(
+  "/set-password",
+  authenticate,
+  [
+    body("newPassword")
+      .isLength({ min: 6 })
+      .withMessage("New password must be at least 6 characters"),
+    validate
+  ],
+  setPassword
+)
 
 
 module.exports = router;

@@ -26,6 +26,7 @@ const getUserDetails = async (req, res) => {
       email: user.email,
       role : user.role,
       created_at: user.created_at,
+      provider : user.provider,
       profileImage : user.profileImage,
       onboarding_stage: user.onboarding_stage,
       complaints_count: complaintsCount,
