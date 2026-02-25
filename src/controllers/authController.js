@@ -7,6 +7,8 @@ const { getAccessToken, getRefreshToken } = require("../config/token");
 const userRepository = AppDataSource.getRepository("User");
 
 const isProd = process.env.NODE_ENV === "production";
+console.log("Client Url ",process.env.CLIENT_URL);
+
 
 /* =========================
    COMMON TOKEN ISSUER

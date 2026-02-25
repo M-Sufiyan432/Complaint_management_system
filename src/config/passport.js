@@ -11,7 +11,10 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "/auth/google/callback",
+      callbackURL:
+        process.env.NODE_ENV === "production"
+          ? `${process.env.CLIENT_URL}/auth/google/callback`
+          : "/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -43,12 +46,11 @@ passport.use(
         }
 
         return done(null, user);
-
       } catch (err) {
         return done(err, null);
       }
-    }
-  )
+    },
+  ),
 );
 
 passport.use(
@@ -60,7 +62,7 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-       const email = profile.emails[0].value;
+        const email = profile.emails[0].value;
         const githubId = profile.id;
 
         let user = await userRepository.findOne({
@@ -88,12 +90,11 @@ passport.use(
         }
 
         return done(null, user);
-
       } catch (err) {
         return done(err, null);
       }
-    }
-  )
+    },
+  ),
 );
 
 module.exports = passport;
