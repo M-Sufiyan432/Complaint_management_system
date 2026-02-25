@@ -9,8 +9,8 @@ const userRepository = AppDataSource.getRepository(UserEntity);
 passport.use(
   new GoogleStrategy(
     {
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          clientID: process.env.GOOGLE_CLIENT_ID || "test",
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET || "test",
       callbackURL:
         process.env.NODE_ENV === "production"
           ? `${process.env.CLIENT_URL}/auth/google/callback`
