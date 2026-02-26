@@ -58,37 +58,46 @@ passport.use(
     {
       clientID: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
-       callbackURL:
+      callbackURL:
         process.env.NODE_ENV === "production"
-          ? `${process.env.Base_URL}/auth/github/callback`
-          : "/auth/github/callback",
+          ? `${process.env.BASE_URL}/auth/github/callback`
+          : "http://localhost:3000/auth/github/callback",
+      scope: ["user:email"],
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        const email = profile.emails[0].value;
-        const githubId = profile.id;
+     
+        let email = null;
+
+        if (profile.emails && profile.emails.length > 0) {
+          email = profile.emails[0].value;
+        }
+        if (!email) {
+          return done(
+            new Error("GitHub account does not have a public email"),
+            null
+          );
+        }
 
         let user = await userRepository.findOne({
           where: { email },
         });
 
-        // 🆕 CASE 1: User does not exist → create OAuth user
         if (!user) {
           user = userRepository.create({
-            name: profile.displayName,
+            name: profile.username,
             email,
             password: null,
             provider: "oauth",
-            githubId,
+            githubId: profile.id,
           });
 
           await userRepository.save(user);
           return done(null, user);
         }
 
-        // 🔗 CASE 2: User exists → link Google safely
         if (!user.githubId) {
-          user.githubId = githubId;
+          user.githubId = profile.id;
           await userRepository.save(user);
         }
 
@@ -96,8 +105,7 @@ passport.use(
       } catch (err) {
         return done(err, null);
       }
-    },
-  ),
+    }
+  )
 );
-
 module.exports = passport;
