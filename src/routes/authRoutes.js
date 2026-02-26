@@ -127,7 +127,7 @@ router.get(
 
 /* GITHUB */
 router.get(
-  "/github",
+  "/auth/github",
   passport.authenticate("github", { scope: ["user:email"] })
 );
 
