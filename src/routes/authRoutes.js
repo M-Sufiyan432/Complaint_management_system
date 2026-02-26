@@ -132,7 +132,7 @@ router.get(
 );
 
 router.get(
-  "auth/github/callback",
+  "/auth/github/callback",
   passport.authenticate("github", { session: false }),
   oauthSuccess
 );
