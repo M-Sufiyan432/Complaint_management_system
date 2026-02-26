@@ -9,23 +9,34 @@ const userRepository = AppDataSource.getRepository(UserEntity);
 passport.use(
   new GoogleStrategy(
     {
-          clientID: process.env.GOOGLE_CLIENT_ID || "test",
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET || "test",
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL:
         process.env.NODE_ENV === "production"
-          ? `${process.env.Base_URL}/auth/google/callback`
-          : "/auth/google/callback",
+          ? `${process.env.BASE_URL}/auth/google/callback`
+          : "http://localhost:3000/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        const email = profile.emails[0].value;
+        let email = null;
+
+        if (profile.emails && profile.emails.length > 0) {
+          email = profile.emails[0].value;
+        }
+
+        if (!email) {
+          return done(
+            new Error("Google account did not return an email"),
+            null
+          );
+        }
+
         const googleId = profile.id;
 
         let user = await userRepository.findOne({
           where: { email },
         });
 
-        // 🆕 CASE 1: User does not exist → create OAuth user
         if (!user) {
           user = userRepository.create({
             name: profile.displayName,
@@ -39,20 +50,19 @@ passport.use(
           return done(null, user);
         }
 
-        // 🔗 CASE 2: User exists → link Google safely
         if (!user.googleId) {
           user.googleId = googleId;
           await userRepository.save(user);
         }
 
         return done(null, user);
+
       } catch (err) {
         return done(err, null);
       }
-    },
-  ),
+    }
+  )
 );
-
 passport.use(
   new GitHubStrategy(
     {
