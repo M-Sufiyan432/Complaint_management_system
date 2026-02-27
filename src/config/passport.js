@@ -13,7 +13,7 @@ passport.use(
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL:
         process.env.NODE_ENV === "production"
-          ? `${process.env.Base_URL}/auth/google/callback`
+          ? `${process.env.BASE_URL}/auth/google/callback`
           : "http://localhost:3000/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
@@ -70,7 +70,7 @@ passport.use(
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
       callbackURL:
         process.env.NODE_ENV === "production"
-          ? `${process.env.Base_URL}/auth/github/callback`
+          ? `${process.env.BASE_URL}/auth/github/callback`
           : "http://localhost:3000/auth/github/callback",
       scope: ["user:email"],
     },

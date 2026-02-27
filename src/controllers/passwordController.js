@@ -147,21 +147,17 @@ const setPassword = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // 🔐 Must be OAuth user
+
     if (!user.googleId && !user.githubId) {
       return res.status(400).json({
         error: "Password can only be set for OAuth accounts.",
       });
     }
-
-    // 🔐 Prevent overwriting existing password
     if (user.password) {
       return res.status(400).json({
         error: "Password already exists. Use change password instead.",
       });
     }
-
-    // Hash password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     user.password = hashedPassword;
