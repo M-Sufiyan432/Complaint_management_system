@@ -131,10 +131,10 @@ const login = async (req, res) => {
 const oauthSuccess = async (req, res) => {
   try {
     const user = req.user;
-    await issueTokens(res, user, true);
+    return issueTokens(res, user, true);  // <-- IMPORTANT
   } catch (error) {
     console.error("OAuth error:", error);
-    res.redirect(`${process.env.CLIENT_URL}/signin`);
+    return res.redirect(`${process.env.CLIENT_URL}/signin`);
   }
 };
 
