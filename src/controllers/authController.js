@@ -32,7 +32,7 @@ const issueTokens = async (res, user, redirect = false) => {
   });
 
   if (redirect) {
-    return res.redirect(`${process.env.CLIENT_URL}/oauth-success`);
+    res.redirect(`${process.env.CLIENT_URL}/#/oauth-success`);
   }
 
   res.status(200).json({
