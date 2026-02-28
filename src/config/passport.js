@@ -5,7 +5,7 @@ const { AppDataSource } = require("./database");
 const UserEntity = require("../entities/User");
 
 const userRepository = AppDataSource.getRepository(UserEntity);
-
+console.log("Test env",process.env.BASE_URL)
 passport.use(
   new GoogleStrategy(
     {
