@@ -32,10 +32,10 @@ const issueTokens = async (res, user, redirect = false) => {
   });
 
   if (redirect) {
-    res.redirect(`${process.env.CLIENT_URL}/#/oauth-success`);
+    return res.redirect(`${process.env.CLIENT_URL}/#/oauth-success`);
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     accessToken,
     user: {
       id: user.id,
@@ -130,6 +130,7 @@ const login = async (req, res) => {
 ========================= */
 const oauthSuccess = async (req, res) => {
   try {
+    console.log("OAuthSuccess triggered");
     const user = req.user;
     return issueTokens(res, user, true);  // <-- IMPORTANT
   } catch (error) {
