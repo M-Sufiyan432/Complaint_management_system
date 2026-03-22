@@ -16,7 +16,7 @@ const AppDataSource = new DataSource({
   // 🔥 Use DATABASE_URL in production
   ...(isProduction
     ? {
-        url: process.env.Ren_Internal_Database_URL,
+        url: process.env.DB_CONN,
         ssl: { rejectUnauthorized: false },
       }
     : {
