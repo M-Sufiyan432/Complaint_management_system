@@ -23,17 +23,23 @@ const AppDataSource = new DataSource({
   type: "postgres",
 
   ...(isProduction
-    ? {
-        url: process.env.DB_CONN,
+  ? {
+      type: "postgres",
+      url: process.env.DB_CONN,
 
-        ssl: true,
+      ssl: {
+        rejectUnauthorized: false,
+      },
 
-        extra: {
-          ssl: {
-            rejectUnauthorized: false,
-          },
+      extra: {
+        ssl: {
+          rejectUnauthorized: false,
         },
-      }
+      },
+
+      // 🔥 ADD THIS (important)
+      connectTimeoutMS: 10000,
+    }
     : {
         host: process.env.DB_HOST,
         port: parseInt(process.env.DB_PORT),
