@@ -49,7 +49,7 @@ router.post("/forgot-password", forgotPasswordLimiter, forgotPassword);
  *         description: Password reset successful
  */
 router.post("/reset-password", resetPassword);
-console.log("Password Routes Hit");
+// console.log("Password Routes Hit");
 
 /**
  * @swagger

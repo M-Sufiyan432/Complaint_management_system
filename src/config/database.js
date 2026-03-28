@@ -9,6 +9,7 @@ const OnboardingReminderEntity = require("../entities/OnboardingReminder");
 console.log("NODE_ENV:", process.env.NODE_ENV);
 console.log("DB_CONN:", process.env.DB_CONN);
 const isProduction = process.env.NODE_ENV === "production";
+console.log("isProduction statement :", isProduction)
 
 
 const AppDataSource = new DataSource({

@@ -7,7 +7,7 @@ const { authorize } = require('../middleware/authorize');
 
 const adminRouter = express.Router();
 
-console.log("Admin Routes hit");
+// console.log("Admin Routes hit");
 
 adminRouter.get('/complaints', authenticate,authorize('admin'), getAllComplaints);
 adminRouter.get('/users', authenticate,authorize('admin'), getAllUsers);
