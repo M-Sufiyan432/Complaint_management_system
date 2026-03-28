@@ -6,28 +6,35 @@ const { ComplaintEntity } = require("../entities/Complaint");
 const { NotificationEntity } = require("../entities/Notification");
 const OnboardingReminderEntity = require("../entities/OnboardingReminder");
 
-console.log("NODE_ENV:", process.env.NODE_ENV);
-console.log("DB_CONN:", process.env.DB_CONN);
+// console.log("NODE_ENV:", process.env.NODE_ENV);
+// console.log("DB_CONN:", process.env.DB_CONN);
 const isProduction = process.env.NODE_ENV === "production";
 console.log("isProduction statement :", isProduction)
 
 
 const AppDataSource = new DataSource({
   type: "postgres",
-  
-  
-  // 🔥 Use DATABASE_URL in production
+
   ...(isProduction
     ? {
         url: process.env.DB_CONN,
-        ssl: { rejectUnauthorized: false },
+
+        ssl: {
+          rejectUnauthorized: false,
+        },
+
+        extra: {
+          ssl: {
+            rejectUnauthorized: false,
+          },
+        },
       }
     : {
-        host: process.env.DB_HOST ,
-        port: parseInt(process.env.DB_PORT ),
-        username: process.env.DB_USERNAME ,
-        password: process.env.DB_PASSWORD ,
-        database: process.env.DB_DATABASE ,
+        host: process.env.DB_HOST,
+        port: parseInt(process.env.DB_PORT),
+        username: process.env.DB_USERNAME,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_DATABASE,
       }),
 
   entities: [
@@ -36,7 +43,7 @@ const AppDataSource = new DataSource({
     NotificationEntity,
     OnboardingReminderEntity,
   ],
-   
+
   synchronize: true,
   logging: true,
 });
