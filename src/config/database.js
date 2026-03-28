@@ -19,9 +19,7 @@ const AppDataSource = new DataSource({
     ? {
         url: process.env.DB_CONN,
 
-        ssl: {
-          rejectUnauthorized: false,
-        },
+        ssl: true, // ✅ required
 
         extra: {
           ssl: {
