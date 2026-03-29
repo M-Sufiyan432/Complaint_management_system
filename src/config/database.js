@@ -6,18 +6,15 @@ const { ComplaintEntity } = require("../entities/Complaint");
 const { NotificationEntity } = require("../entities/Notification");
 const OnboardingReminderEntity = require("../entities/OnboardingReminder");
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
 
 console.log("PGHOST:", process.env.PGHOST);
 
 const isProduction = process.env.NODE_ENV === "production";
 console.log("isProduction statement :", isProduction)
 
-delete process.env.DATABASE_URL;
-delete process.env.PGHOST;
-delete process.env.PGPORT;
-delete process.env.PGUSER;
-delete process.env.PGPASSWORD;
-delete process.env.PGDATABASE;
+
 
 const AppDataSource = new DataSource({
   type: "postgres",

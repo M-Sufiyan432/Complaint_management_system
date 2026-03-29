@@ -5,7 +5,7 @@ const { AppDataSource } = require("./database");
 const UserEntity = require("../entities/User");
 
 const userRepository = AppDataSource.getRepository(UserEntity);
-console.log("Test env",process.env.BASE_URL)
+console.log("Test env",process.env.APP_BASE_URL)
 passport.use(
   new GoogleStrategy(
     {
@@ -15,14 +15,14 @@ passport.use(
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL:
         process.env.NODE_ENV === "production"
-          ? `${process.env.BASE_URL}/auth/google/callback`
+          ? `${process.env.APP_BASE_URL}/auth/google/callback`
           : "http://localhost:3000/auth/google/callback",
         
           
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        console.log("test",process.env.BASE_URL)
+        console.log("test",process.env.APP_BASE_URL)
         let email = null;
 
         if (profile.emails && profile.emails.length > 0) {
@@ -75,13 +75,13 @@ passport.use(
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
       callbackURL:
         process.env.NODE_ENV === "production"
-          ? `${process.env.BASE_URL}/auth/github/callback`
+          ? `${process.env.APP_BASE_URL}/auth/github/callback`
           : "http://localhost:3000/auth/github/callback",
       scope: ["user:email"],
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-         console.log("Test",process.env.BASE_URL);
+         console.log("Test",process.env.APP_BASE_URL);
          
         let email = null;
 

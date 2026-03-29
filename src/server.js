@@ -29,6 +29,10 @@ const allowedOrigins = [
   "https://complaint-managment-frontend.onrender.com"
 ];
 
+
+
+console.log("Process Env",process.env);
+
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
